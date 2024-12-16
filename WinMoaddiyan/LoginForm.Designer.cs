@@ -40,7 +40,7 @@
             // lblEmail
             // 
             lblEmail.AutoSize = true;
-            lblEmail.Location = new Point(25, 21);
+            lblEmail.Location = new Point(15, 15);
             lblEmail.Name = "lblEmail";
             lblEmail.Size = new Size(93, 14);
             lblEmail.TabIndex = 0;
@@ -48,16 +48,16 @@
             // 
             // txtEmail
             // 
-            txtEmail.Location = new Point(124, 19);
+            txtEmail.Location = new Point(114, 12);
             txtEmail.Name = "txtEmail";
             txtEmail.RightToLeft = RightToLeft.No;
-            txtEmail.Size = new Size(333, 22);
+            txtEmail.Size = new Size(225, 22);
             txtEmail.TabIndex = 1;
             // 
             // lblPassword
             // 
             lblPassword.AutoSize = true;
-            lblPassword.Location = new Point(25, 54);
+            lblPassword.Location = new Point(15, 48);
             lblPassword.Name = "lblPassword";
             lblPassword.Size = new Size(26, 14);
             lblPassword.TabIndex = 2;
@@ -65,26 +65,27 @@
             // 
             // txtPassword
             // 
-            txtPassword.Location = new Point(124, 51);
+            txtPassword.Location = new Point(114, 44);
             txtPassword.Name = "txtPassword";
             txtPassword.PasswordChar = '*';
             txtPassword.RightToLeft = RightToLeft.No;
-            txtPassword.Size = new Size(333, 22);
+            txtPassword.Size = new Size(225, 22);
             txtPassword.TabIndex = 3;
             // 
             // btnLogin
             // 
-            btnLogin.Location = new Point(301, 86);
+            btnLogin.Location = new Point(183, 79);
             btnLogin.Name = "btnLogin";
             btnLogin.Size = new Size(75, 23);
             btnLogin.TabIndex = 4;
             btnLogin.Text = "ورود";
             btnLogin.UseVisualStyleBackColor = true;
+            btnLogin.Click += btnLogin_Click;
             // 
             // lblSignUp
             // 
             lblSignUp.AutoSize = true;
-            lblSignUp.Location = new Point(124, 90);
+            lblSignUp.Location = new Point(15, 83);
             lblSignUp.Name = "lblSignUp";
             lblSignUp.Size = new Size(57, 14);
             lblSignUp.TabIndex = 5;
@@ -95,7 +96,7 @@
             // btnCancel
             // 
             btnCancel.DialogResult = DialogResult.Cancel;
-            btnCancel.Location = new Point(382, 86);
+            btnCancel.Location = new Point(264, 79);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(75, 23);
             btnCancel.TabIndex = 6;
@@ -109,7 +110,7 @@
             AutoScaleDimensions = new SizeF(7F, 14F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(486, 129);
+            ClientSize = new Size(351, 115);
             Controls.Add(btnCancel);
             Controls.Add(lblSignUp);
             Controls.Add(btnLogin);
