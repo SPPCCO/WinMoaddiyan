@@ -1,8 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RSecurityBackend.Models.Auth.ViewModels;
 using System.Net;
-using System.Net.Http.Headers;
-using System.Text;
 
 namespace WinMoaddiyan
 {
@@ -39,8 +37,7 @@ namespace WinMoaddiyan
             {
                 using (HttpClient httpClient = new HttpClient())
                 {
-
-                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Properties.Settings.Default.Token);
+                    await MoaddiyanSessionChecker.PrepareClientAsync(httpClient);
                     var response = await httpClient.DeleteAsync
                         (
                         $"https://api.moaddiyan.com/api/users/delsession?userId={loggedOnUser.User.Id}&sessionId={Properties.Settings.Default.SessionId}"
