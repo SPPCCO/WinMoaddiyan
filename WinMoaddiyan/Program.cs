@@ -8,10 +8,16 @@ namespace WinMoaddiyan
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new LoginForm());
+            if(string.IsNullOrEmpty(Properties.Settings.Default.Token))
+            {
+                Application.Run(new LoginForm());
+            }
+            else
+            {
+                Application.Run(new MainForm());
+            }
+            
         }
     }
 }

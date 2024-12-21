@@ -86,6 +86,7 @@ namespace WinMoaddiyan
             Enabled = true;
             Cursor = Cursors.Default;
             //Open Main Window
+            Application.Restart();
         }
     }
 }
