@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Models\Intamedia\" />
     <Folder Include="Models\Workspace\" />
   </ItemGroup>
 
