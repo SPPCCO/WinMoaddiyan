@@ -1,9 +1,11 @@
 ﻿using Newtonsoft.Json;
 using RSecurityBackend.Models.Auth.ViewModels;
+using RSecurityBackend.Models.Generic;
 using System.Net;
 using TadbirTaxService.Models.Intamedia;
 using TadbirTaxService.Models.Workspace;
 using WinMoaddiyan.Properties;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WinMoaddiyan
 {
@@ -12,6 +14,9 @@ namespace WinMoaddiyan
         public MainForm()
         {
             InitializeComponent();
+            var statusList = IntamediaInvoiceStatusDescriptor.Values;
+            cmbStatus.Items.AddRange(statusList);
+            cmbStatus.SelectedItem = statusList.Where(x => x.IntamediaInvoiceStatus == IntamediaInvoiceStatus.Current).Single();
         }
 
         private async void btnLogout_Click(object sender, EventArgs e)
@@ -164,6 +169,7 @@ namespace WinMoaddiyan
 
         private async Task LoadinvoicesAsync()
         {
+            if (cmbWorkspace.SelectedItem == null || cmbStatus.SelectedItem == null) return;
             Enabled = false;
             Cursor = Cursors.WaitCursor;
             Application.DoEvents();
@@ -175,7 +181,7 @@ namespace WinMoaddiyan
                     await MoaddiyanSessionChecker.PrepareClientAsync(httpClient);
                     var response = await httpClient.GetAsync
                         (
-                        $"https://api.moaddiyan.com/api/invoice/{Settings.Default.WorkspaceId}?PageNumber=1&PageSize=50&status=20&invoiceNumber=0"
+                        $"https://api.moaddiyan.com/api/invoice/{Settings.Default.WorkspaceId}?PageNumber=1&PageSize=50&status={(cmbStatus.SelectedItem as IntamediaInvoiceStatusDescriptor).IntamediaInvoiceStatus}&invoiceNumber=0"
                         );
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
@@ -192,6 +198,9 @@ namespace WinMoaddiyan
                     {
                         grd.DataSource = invoices;
                     }
+
+                    var pagingMeta = JsonConvert.DeserializeObject<PaginationMetadata>(response.Headers.GetValues("paging-headers").Single());
+                    lblPaging.Text = $"صفحهٔ {pagingMeta.currentPage} از {pagingMeta.totalPages} - تعداد کل: {pagingMeta.totalCount}";
                 }
             }
             catch (Exception exp)
@@ -209,6 +218,9 @@ namespace WinMoaddiyan
             await LoadinvoicesAsync();
         }
 
-
+        private async void cmbStatus_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            await LoadinvoicesAsync();
+        }
     }
 }

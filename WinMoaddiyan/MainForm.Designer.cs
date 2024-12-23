@@ -34,16 +34,22 @@
             cmbWorkspace = new ToolStripComboBox();
             btnRefreshWorkspaces = new ToolStripButton();
             btnLogout = new ToolStripButton();
+            toolStripSeparator1 = new ToolStripSeparator();
+            lblStatus = new ToolStripLabel();
+            cmbStatus = new ToolStripComboBox();
             grd = new DataGridView();
+            status = new StatusStrip();
+            lblPaging = new ToolStripStatusLabel();
             toolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)grd).BeginInit();
+            status.SuspendLayout();
             SuspendLayout();
             // 
             // toolStrip
             // 
             toolStrip.Font = new Font("Tahoma", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             toolStrip.GripStyle = ToolStripGripStyle.Hidden;
-            toolStrip.Items.AddRange(new ToolStripItem[] { lblWorkspace, cmbWorkspace, btnRefreshWorkspaces, btnLogout });
+            toolStrip.Items.AddRange(new ToolStripItem[] { lblWorkspace, cmbWorkspace, btnRefreshWorkspaces, btnLogout, toolStripSeparator1, lblStatus, cmbStatus });
             toolStrip.Location = new Point(0, 0);
             toolStrip.Name = "toolStrip";
             toolStrip.Size = new Size(800, 25);
@@ -85,6 +91,25 @@
             btnLogout.Text = "خروج از حساب";
             btnLogout.Click += btnLogout_Click;
             // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(6, 25);
+            // 
+            // lblStatus
+            // 
+            lblStatus.Name = "lblStatus";
+            lblStatus.Size = new Size(106, 22);
+            lblStatus.Text = "وضعیت صورتحساب:";
+            // 
+            // cmbStatus
+            // 
+            cmbStatus.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbStatus.Font = new Font("Tahoma", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            cmbStatus.Name = "cmbStatus";
+            cmbStatus.Size = new Size(200, 25);
+            cmbStatus.SelectedIndexChanged += cmbStatus_SelectedIndexChanged;
+            // 
             // grd
             // 
             grd.AllowUserToAddRows = false;
@@ -97,11 +122,27 @@
             grd.Size = new Size(800, 395);
             grd.TabIndex = 1;
             // 
+            // status
+            // 
+            status.Items.AddRange(new ToolStripItem[] { lblPaging });
+            status.Location = new Point(0, 398);
+            status.Name = "status";
+            status.Size = new Size(800, 22);
+            status.TabIndex = 2;
+            status.Text = "statusStrip1";
+            // 
+            // lblPaging
+            // 
+            lblPaging.Name = "lblPaging";
+            lblPaging.Size = new Size(118, 17);
+            lblPaging.Text = "toolStripStatusLabel1";
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 14F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 420);
+            Controls.Add(status);
             Controls.Add(grd);
             Controls.Add(toolStrip);
             Font = new Font("Tahoma", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
@@ -113,6 +154,8 @@
             toolStrip.ResumeLayout(false);
             toolStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)grd).EndInit();
+            status.ResumeLayout(false);
+            status.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -125,5 +168,10 @@
         private ToolStripButton btnLogout;
         private ToolStripButton btnRefreshWorkspaces;
         private DataGridView grd;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripLabel lblStatus;
+        private ToolStripComboBox cmbStatus;
+        private StatusStrip status;
+        private ToolStripStatusLabel lblPaging;
     }
 }

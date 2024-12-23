@@ -24,6 +24,5 @@
         Reserved19 = 19,
         Current = 20,
         All = 21,
-
     }
 }
