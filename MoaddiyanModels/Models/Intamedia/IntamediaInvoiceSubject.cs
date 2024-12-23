@@ -3,6 +3,10 @@
     public enum IntamediaInvoiceSubject
     {
         /// <summary>
+        /// صفر
+        /// </summary>
+        Reserved = 0,
+        /// <summary>
         /// اصلی
         /// </summary>
         Main = 1,

@@ -29,24 +29,26 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            toolStrip1 = new ToolStrip();
+            toolStrip = new ToolStrip();
             lblWorkspace = new ToolStripLabel();
             cmbWorkspace = new ToolStripComboBox();
             btnRefreshWorkspaces = new ToolStripButton();
             btnLogout = new ToolStripButton();
-            toolStrip1.SuspendLayout();
+            grd = new DataGridView();
+            toolStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)grd).BeginInit();
             SuspendLayout();
             // 
-            // toolStrip1
+            // toolStrip
             // 
-            toolStrip1.Font = new Font("Tahoma", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            toolStrip1.GripStyle = ToolStripGripStyle.Hidden;
-            toolStrip1.Items.AddRange(new ToolStripItem[] { lblWorkspace, cmbWorkspace, btnRefreshWorkspaces, btnLogout });
-            toolStrip1.Location = new Point(0, 0);
-            toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(800, 25);
-            toolStrip1.TabIndex = 0;
-            toolStrip1.Text = "نوار ابزار";
+            toolStrip.Font = new Font("Tahoma", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            toolStrip.GripStyle = ToolStripGripStyle.Hidden;
+            toolStrip.Items.AddRange(new ToolStripItem[] { lblWorkspace, cmbWorkspace, btnRefreshWorkspaces, btnLogout });
+            toolStrip.Location = new Point(0, 0);
+            toolStrip.Name = "toolStrip";
+            toolStrip.Size = new Size(800, 25);
+            toolStrip.TabIndex = 0;
+            toolStrip.Text = "نوار ابزار";
             // 
             // lblWorkspace
             // 
@@ -83,30 +85,45 @@
             btnLogout.Text = "خروج از حساب";
             btnLogout.Click += btnLogout_Click;
             // 
+            // grd
+            // 
+            grd.AllowUserToAddRows = false;
+            grd.AllowUserToDeleteRows = false;
+            grd.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            grd.Dock = DockStyle.Fill;
+            grd.Location = new Point(0, 25);
+            grd.Name = "grd";
+            grd.ReadOnly = true;
+            grd.Size = new Size(800, 395);
+            grd.TabIndex = 1;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 14F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 420);
-            Controls.Add(toolStrip1);
+            Controls.Add(grd);
+            Controls.Add(toolStrip);
             Font = new Font("Tahoma", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             Name = "MainForm";
             RightToLeft = RightToLeft.Yes;
             RightToLeftLayout = true;
             Text = "تدبیر مؤدیان";
             Load += MainForm_Load;
-            toolStrip1.ResumeLayout(false);
-            toolStrip1.PerformLayout();
+            toolStrip.ResumeLayout(false);
+            toolStrip.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)grd).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private ToolStrip toolStrip1;
+        private ToolStrip toolStrip;
         private ToolStripLabel lblWorkspace;
         private ToolStripComboBox cmbWorkspace;
         private ToolStripButton btnLogout;
         private ToolStripButton btnRefreshWorkspaces;
+        private DataGridView grd;
     }
 }

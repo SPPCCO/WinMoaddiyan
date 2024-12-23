@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RSecurityBackend.Models.Auth.ViewModels;
 using System.Net;
+using TadbirTaxService.Models.Intamedia;
 using TadbirTaxService.Models.Workspace;
 using WinMoaddiyan.Properties;
 
@@ -135,6 +136,7 @@ namespace WinMoaddiyan
                         if (workspaces.Any(w => w.Workspace.Id == Settings.Default.WorkspaceId))
                         {
                             cmbWorkspace.SelectedItem = workspaces.Where(w => w.Workspace.Id == Settings.Default.WorkspaceId).Single();
+                            await LoadinvoicesAsync();
                             return;
                         }
                         if (workspaces.Any())
@@ -142,6 +144,7 @@ namespace WinMoaddiyan
                             cmbWorkspace.SelectedIndex = 0;
                             Settings.Default.WorkspaceId = ((WorkspaceExViewModel)cmbWorkspace.SelectedItem).Workspace.Id;
                             Settings.Default.Save();
+                            await LoadinvoicesAsync();
                         }
                         return;
                     }
@@ -159,10 +162,53 @@ namespace WinMoaddiyan
             await LoadWorkspacesAsync();
         }
 
-        private void cmbWorkspace_SelectedIndexChanged(object sender, EventArgs e)
+        private async Task LoadinvoicesAsync()
+        {
+            Enabled = false;
+            Cursor = Cursors.WaitCursor;
+            Application.DoEvents();
+
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    await MoaddiyanSessionChecker.PrepareClientAsync(httpClient);
+                    var response = await httpClient.GetAsync
+                        (
+                        $"https://api.moaddiyan.com/api/invoice/{Settings.Default.WorkspaceId}?PageNumber=1&PageSize=50&status=20&invoiceNumber=0"
+                        );
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        Cursor = Cursors.Default;
+                        Enabled = true;
+                        MessageBox.Show(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return;
+                    }
+                    response.EnsureSuccessStatusCode();
+                    Cursor = Cursors.Default;
+                    Enabled = true;
+                    var invoices = JsonConvert.DeserializeObject<IntamediaInvoice[]>(await response.Content.ReadAsStringAsync());
+                    if (invoices != null)
+                    {
+                        grd.DataSource = invoices;
+                    }
+                }
+            }
+            catch (Exception exp)
+            {
+                Enabled = true;
+                MessageBox.Show(exp.ToString());
+            }
+        }
+
+        private async void cmbWorkspace_SelectedIndexChanged(object sender, EventArgs e)
         {
             Settings.Default.WorkspaceId = ((WorkspaceExViewModel)cmbWorkspace.SelectedItem).Workspace.Id;
             Settings.Default.Save();
+
+            await LoadinvoicesAsync();
         }
+
+
     }
 }
