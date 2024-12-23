@@ -13,5 +13,14 @@ namespace TadbirTaxService.Models.Workspace
         /// tax info
         /// </summary>
         public RWorkspaceTaxInfo TaxInfo { get; set; }
+
+        /// <summary>
+        /// to string
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return Workspace.Name;
+        }
     }
 }

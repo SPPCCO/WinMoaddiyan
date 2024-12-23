@@ -58,5 +58,29 @@ namespace WinMoaddiyan.Properties {
                 this["SessionId"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string WorkspacesJson {
+            get {
+                return ((string)(this["WorkspacesJson"]));
+            }
+            set {
+                this["WorkspacesJson"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("00000000-0000-0000-0000-000000000000")]
+        public global::System.Guid WorkspaceId {
+            get {
+                return ((global::System.Guid)(this["WorkspaceId"]));
+            }
+            set {
+                this["WorkspaceId"] = value;
+            }
+        }
     }
 }

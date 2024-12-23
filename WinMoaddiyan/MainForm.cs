@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using RSecurityBackend.Models.Auth.ViewModels;
 using System.Net;
+using TadbirTaxService.Models.Workspace;
+using WinMoaddiyan.Properties;
 
 namespace WinMoaddiyan
 {
@@ -18,13 +20,13 @@ namespace WinMoaddiyan
                 return;
             }
 
-            LoggedOnUserModel? loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModel>(Properties.Settings.Default.LoggenOnUserJson);
+            LoggedOnUserModel? loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModel>(Settings.Default.LoggenOnUserJson);
             if (loggedOnUser == null)
             {
-                Properties.Settings.Default.LoggenOnUserJson = "";
-                Properties.Settings.Default.Token = "";
-                Properties.Settings.Default.SessionId = Guid.Empty;
-                Properties.Settings.Default.Save();
+                Settings.Default.LoggenOnUserJson = "";
+                Settings.Default.Token = "";
+                Settings.Default.SessionId = Guid.Empty;
+                Settings.Default.Save();
 
                 Application.Restart();
                 return;
@@ -40,7 +42,7 @@ namespace WinMoaddiyan
                     await MoaddiyanSessionChecker.PrepareClientAsync(httpClient);
                     var response = await httpClient.DeleteAsync
                         (
-                        $"https://api.moaddiyan.com/api/users/delsession?userId={loggedOnUser.User.Id}&sessionId={Properties.Settings.Default.SessionId}"
+                        $"https://api.moaddiyan.com/api/users/delsession?userId={loggedOnUser.User.Id}&sessionId={Settings.Default.SessionId}"
                         );
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
@@ -50,24 +52,117 @@ namespace WinMoaddiyan
                         return;
                     }
                     response.EnsureSuccessStatusCode();
-                    
 
-                    Properties.Settings.Default.LoggenOnUserJson = "";
-                    Properties.Settings.Default.Token = "";
-                    Properties.Settings.Default.SessionId = Guid.Empty;
-                    Properties.Settings.Default.Save();
+
+                    Settings.Default.LoggenOnUserJson = "";
+                    Settings.Default.Token = "";
+                    Settings.Default.SessionId = Guid.Empty;
+                    Settings.Default.Save();
 
                     Application.Restart();
                 }
             }
             catch (Exception exp)
             {
-                Enabled = true ;
+                Enabled = true;
                 MessageBox.Show(exp.ToString());
             }
-            
 
-           
+
+
+        }
+
+        private async void MainForm_Load(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(Settings.Default.WorkspacesJson))
+            {
+                var workspaces = JsonConvert.DeserializeObject<WorkspaceExViewModel[]>(Settings.Default.WorkspacesJson);
+                if (workspaces != null)
+                {
+                    cmbWorkspace.Items.AddRange(workspaces);
+                    if (workspaces.Any(w => w.Workspace.Id == Settings.Default.WorkspaceId))
+                    {
+                        cmbWorkspace.SelectedItem = workspaces.Where(w => w.Workspace.Id == Settings.Default.WorkspaceId).Single();
+                        return;
+                    }
+                    if (workspaces.Any())
+                    {
+                        cmbWorkspace.SelectedIndex = 0;
+                        Settings.Default.WorkspaceId = ((WorkspaceExViewModel)cmbWorkspace.SelectedItem).Workspace.Id;
+                        Settings.Default.Save();
+                    }
+                    return;
+                }
+            }
+
+            await LoadWorkspacesAsync();
+
+
+        }
+
+        private async Task LoadWorkspacesAsync()
+        {
+            Enabled = false;
+            Application.DoEvents();
+
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    await MoaddiyanSessionChecker.PrepareClientAsync(httpClient);
+                    var response = await httpClient.GetAsync
+                        (
+                        $"https://api.moaddiyan.com/api/workspace/ex?onlyActive=true&onlyOwned=false&onlyMember=false"
+                        );
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        Cursor = Cursors.Default;
+                        Enabled = true;
+                        MessageBox.Show(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return;
+                    }
+                    response.EnsureSuccessStatusCode();
+                    Cursor = Cursors.Default;
+                    Enabled = true;
+                    var json = await response.Content.ReadAsStringAsync();
+                    var workspaces = JsonConvert.DeserializeObject<WorkspaceExViewModel[]>(json);
+                    if (workspaces != null)
+                    {
+                        Settings.Default.WorkspacesJson = json;
+                        Settings.Default.Save();
+                        cmbWorkspace.Items.AddRange(workspaces);
+
+                        if (workspaces.Any(w => w.Workspace.Id == Settings.Default.WorkspaceId))
+                        {
+                            cmbWorkspace.SelectedItem = workspaces.Where(w => w.Workspace.Id == Settings.Default.WorkspaceId).Single();
+                            return;
+                        }
+                        if (workspaces.Any())
+                        {
+                            cmbWorkspace.SelectedIndex = 0;
+                            Settings.Default.WorkspaceId = ((WorkspaceExViewModel)cmbWorkspace.SelectedItem).Workspace.Id;
+                            Settings.Default.Save();
+                        }
+                        return;
+                    }
+                }
+            }
+            catch (Exception exp)
+            {
+                Enabled = true;
+                MessageBox.Show(exp.ToString());
+            }
+        }
+
+        private async void btnRefreshWorkspaces_Click(object sender, EventArgs e)
+        {
+            await LoadWorkspacesAsync();
+        }
+
+        private void cmbWorkspace_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Settings.Default.WorkspaceId = ((WorkspaceExViewModel)cmbWorkspace.SelectedItem).Workspace.Id;
+            Settings.Default.Save();
         }
     }
 }

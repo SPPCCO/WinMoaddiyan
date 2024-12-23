@@ -32,7 +32,7 @@
             toolStrip1 = new ToolStrip();
             lblWorkspace = new ToolStripLabel();
             cmbWorkspace = new ToolStripComboBox();
-            btnAddWorkspace = new ToolStripButton();
+            btnRefreshWorkspaces = new ToolStripButton();
             btnLogout = new ToolStripButton();
             toolStrip1.SuspendLayout();
             SuspendLayout();
@@ -41,7 +41,7 @@
             // 
             toolStrip1.Font = new Font("Tahoma", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             toolStrip1.GripStyle = ToolStripGripStyle.Hidden;
-            toolStrip1.Items.AddRange(new ToolStripItem[] { lblWorkspace, cmbWorkspace, btnAddWorkspace, btnLogout });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { lblWorkspace, cmbWorkspace, btnRefreshWorkspaces, btnLogout });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(800, 25);
@@ -60,16 +60,17 @@
             cmbWorkspace.Font = new Font("Tahoma", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             cmbWorkspace.Name = "cmbWorkspace";
             cmbWorkspace.Size = new Size(200, 25);
+            cmbWorkspace.SelectedIndexChanged += cmbWorkspace_SelectedIndexChanged;
             // 
-            // btnAddWorkspace
+            // btnRefreshWorkspaces
             // 
-            btnAddWorkspace.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            btnAddWorkspace.Image = (Image)resources.GetObject("btnAddWorkspace.Image");
-            btnAddWorkspace.ImageTransparentColor = Color.Magenta;
-            btnAddWorkspace.Name = "btnAddWorkspace";
-            btnAddWorkspace.Size = new Size(23, 22);
-            btnAddWorkspace.Text = "+";
-            btnAddWorkspace.ToolTipText = "شرکت جدید";
+            btnRefreshWorkspaces.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            btnRefreshWorkspaces.Image = (Image)resources.GetObject("btnRefreshWorkspaces.Image");
+            btnRefreshWorkspaces.ImageTransparentColor = Color.Magenta;
+            btnRefreshWorkspaces.Name = "btnRefreshWorkspaces";
+            btnRefreshWorkspaces.Size = new Size(56, 22);
+            btnRefreshWorkspaces.Text = "به‌روزآوری";
+            btnRefreshWorkspaces.Click += btnRefreshWorkspaces_Click;
             // 
             // btnLogout
             // 
@@ -93,6 +94,7 @@
             RightToLeft = RightToLeft.Yes;
             RightToLeftLayout = true;
             Text = "تدبیر مؤدیان";
+            Load += MainForm_Load;
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
             ResumeLayout(false);
@@ -104,7 +106,7 @@
         private ToolStrip toolStrip1;
         private ToolStripLabel lblWorkspace;
         private ToolStripComboBox cmbWorkspace;
-        private ToolStripButton btnAddWorkspace;
         private ToolStripButton btnLogout;
+        private ToolStripButton btnRefreshWorkspaces;
     }
 }
