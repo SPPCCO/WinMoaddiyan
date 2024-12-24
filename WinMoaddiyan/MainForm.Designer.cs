@@ -37,6 +37,7 @@
             toolStripSeparator1 = new ToolStripSeparator();
             lblStatus = new ToolStripLabel();
             cmbStatus = new ToolStripComboBox();
+            btnAddInvoice = new ToolStripButton();
             grd = new DataGridView();
             status = new StatusStrip();
             lblPaging = new ToolStripStatusLabel();
@@ -49,7 +50,7 @@
             // 
             toolStrip.Font = new Font("Tahoma", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             toolStrip.GripStyle = ToolStripGripStyle.Hidden;
-            toolStrip.Items.AddRange(new ToolStripItem[] { lblWorkspace, cmbWorkspace, btnRefreshWorkspaces, btnLogout, toolStripSeparator1, lblStatus, cmbStatus });
+            toolStrip.Items.AddRange(new ToolStripItem[] { lblWorkspace, cmbWorkspace, btnRefreshWorkspaces, btnLogout, toolStripSeparator1, lblStatus, cmbStatus, btnAddInvoice });
             toolStrip.Location = new Point(0, 0);
             toolStrip.Name = "toolStrip";
             toolStrip.Size = new Size(800, 25);
@@ -110,6 +111,17 @@
             cmbStatus.Size = new Size(200, 25);
             cmbStatus.SelectedIndexChanged += cmbStatus_SelectedIndexChanged;
             // 
+            // btnAddInvoice
+            // 
+            btnAddInvoice.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            btnAddInvoice.Image = (Image)resources.GetObject("btnAddInvoice.Image");
+            btnAddInvoice.ImageTransparentColor = Color.Magenta;
+            btnAddInvoice.Name = "btnAddInvoice";
+            btnAddInvoice.Size = new Size(23, 22);
+            btnAddInvoice.Text = "+";
+            btnAddInvoice.ToolTipText = "صورتحساب جدید";
+            btnAddInvoice.Click += btnAddInvoice_Click;
+            // 
             // grd
             // 
             grd.AllowUserToAddRows = false;
@@ -119,6 +131,7 @@
             grd.Location = new Point(0, 25);
             grd.Name = "grd";
             grd.ReadOnly = true;
+            grd.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             grd.Size = new Size(800, 395);
             grd.TabIndex = 1;
             // 
@@ -134,8 +147,8 @@
             // lblPaging
             // 
             lblPaging.Name = "lblPaging";
-            lblPaging.Size = new Size(118, 17);
-            lblPaging.Text = "toolStripStatusLabel1";
+            lblPaging.Size = new Size(32, 17);
+            lblPaging.Text = "آماده";
             // 
             // MainForm
             // 
@@ -150,6 +163,7 @@
             RightToLeft = RightToLeft.Yes;
             RightToLeftLayout = true;
             Text = "تدبیر مؤدیان";
+            WindowState = FormWindowState.Maximized;
             Load += MainForm_Load;
             toolStrip.ResumeLayout(false);
             toolStrip.PerformLayout();
@@ -173,5 +187,6 @@
         private ToolStripComboBox cmbStatus;
         private StatusStrip status;
         private ToolStripStatusLabel lblPaging;
+        private ToolStripButton btnAddInvoice;
     }
 }

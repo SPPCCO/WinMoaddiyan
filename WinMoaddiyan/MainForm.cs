@@ -1,7 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Newtonsoft.Json;
 using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System.Net;
+using System.Text;
 using TadbirTaxService.Models.Intamedia;
 using TadbirTaxService.Models.Workspace;
 using WinMoaddiyan.Properties;
@@ -70,6 +72,7 @@ namespace WinMoaddiyan
             }
             catch (Exception exp)
             {
+                Cursor = Cursors.Default;
                 Enabled = true;
                 MessageBox.Show(exp.ToString());
             }
@@ -157,6 +160,7 @@ namespace WinMoaddiyan
             }
             catch (Exception exp)
             {
+                Cursor = Cursors.Default;
                 Enabled = true;
                 MessageBox.Show(exp.ToString());
             }
@@ -205,6 +209,7 @@ namespace WinMoaddiyan
             }
             catch (Exception exp)
             {
+                Cursor = Cursors.Default;
                 Enabled = true;
                 MessageBox.Show(exp.ToString());
             }
@@ -221,6 +226,117 @@ namespace WinMoaddiyan
         private async void cmbStatus_SelectedIndexChanged(object sender, EventArgs e)
         {
             await LoadinvoicesAsync();
+        }
+
+        private async void btnAddInvoice_Click(object sender, EventArgs e)
+        {
+            if (cmbWorkspace.SelectedItem == null || cmbStatus.SelectedItem == null) return;
+            Enabled = false;
+            Cursor = Cursors.WaitCursor;
+            long invoiceNumber = 1;
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    await MoaddiyanSessionChecker.PrepareClientAsync(httpClient);
+                    var response = await httpClient.GetAsync
+                        (
+                        $"https://api.moaddiyan.com/api/invoice/{Settings.Default.WorkspaceId}/last"
+                        );
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        Cursor = Cursors.Default;
+                        Enabled = true;
+                        MessageBox.Show(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return;
+                    }
+                    response.EnsureSuccessStatusCode();
+                    Cursor = Cursors.Default;
+                    Enabled = true;
+                    var lastInvoice = JsonConvert.DeserializeObject<IntamediaInvoice>(await response.Content.ReadAsStringAsync());
+                    if(lastInvoice != null)
+                    {
+                        invoiceNumber = lastInvoice.InvoiceNumber + 1;
+                    }
+                }
+            }
+            catch (Exception exp)
+            {
+                Cursor = Cursors.Default;
+                Enabled = true;
+                MessageBox.Show(exp.ToString());
+                return;
+            }
+            Application.DoEvents();
+
+            var measurementUnit = IntamediaMeasurementUnit.Units.Where(u => u.Name == "عدد").Single(); //واحد اقلام صورتحساب
+
+            IntamediaInvoice invoice = new IntamediaInvoice()
+            {
+                WorkspaceId = Settings.Default.WorkspaceId, //شرکت
+                InvoiceNumber = invoiceNumber, //شماره یا سریال داخلی صورتحساب
+                DateTime = DateTime.Now, //تاریخ و زمان صدور صورتحساب
+                InvoiceSubject = IntamediaInvoiceSubject.Main,// موضوع صورتحساب
+                InvoiceType = IntamediaInvoiceType.Type2, //نوع صورتحساب
+                InvoicePattern = IntamediaInvoicePattern.Pattern1NormalSales,//الگوی صورتحساب
+                RecalculateSums = true,//جمع‌ها به طور خودکار حساب شود
+                Items =
+                [
+                    new IntamediaInvoiceItem()
+                    {
+                        StuffId = "2900750000016",//شناسهٔ کالا / خدمت
+                        Description = "نرم‌افزار تدبیر",//شرح
+                        Amount = 2,//تعداد یا مقدار
+                        MeasurementUnitCode = measurementUnit.Code,
+                        MeasurementUnitName = measurementUnit.Name,
+                        UnitPrice = 10_000_000,//مبلغ واحد به ریال
+                        Discount = 0, //تخفیف سطر به ریال
+                        ValueAddedTaxRateInPercent = 10,//درصد مالیات بر ارزش افزوده
+                    },
+                    new IntamediaInvoiceItem()
+                    {
+                        StuffId = "2330002811587",
+                        Description = "خدمات پشتیبانی",
+                        Amount = 3,
+                        MeasurementUnitCode = measurementUnit.Code,
+                        MeasurementUnitName = measurementUnit.Name,
+                        UnitPrice = 2_000_000,
+                        Discount = 500_000,
+                        ValueAddedTaxRateInPercent = 10,
+                    },
+                ]
+            };
+
+
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    await MoaddiyanSessionChecker.PrepareClientAsync(httpClient);
+                    var response = await httpClient.PostAsync
+                        (
+                        $"https://api.moaddiyan.com/api/invoice/{Settings.Default.WorkspaceId}",
+                         new StringContent(JsonConvert.SerializeObject(invoice), Encoding.UTF8, "application/json")
+                        );
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        Cursor = Cursors.Default;
+                        Enabled = true;
+                        MessageBox.Show(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return;
+                    }
+                    response.EnsureSuccessStatusCode();
+                    var newInvoice = JsonConvert.DeserializeObject<IntamediaInvoice>(await response.Content.ReadAsStringAsync());
+                    await LoadinvoicesAsync();
+                }
+            }
+            catch (Exception exp)
+            {
+                Cursor = Cursors.Default;
+                Enabled = true;
+                MessageBox.Show(exp.ToString());
+                return;
+            }
         }
     }
 }
