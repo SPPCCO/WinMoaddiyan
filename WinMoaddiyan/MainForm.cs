@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using Azure;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
@@ -254,7 +255,7 @@ namespace WinMoaddiyan
                     Cursor = Cursors.Default;
                     Enabled = true;
                     var lastInvoice = JsonConvert.DeserializeObject<IntamediaInvoice>(await response.Content.ReadAsStringAsync());
-                    if(lastInvoice != null)
+                    if (lastInvoice != null)
                     {
                         invoiceNumber = lastInvoice.InvoiceNumber + 1;
                     }
@@ -328,6 +329,118 @@ namespace WinMoaddiyan
                     response.EnsureSuccessStatusCode();
                     var newInvoice = JsonConvert.DeserializeObject<IntamediaInvoice>(await response.Content.ReadAsStringAsync());
                     await LoadinvoicesAsync();
+                }
+            }
+            catch (Exception exp)
+            {
+                Cursor = Cursors.Default;
+                Enabled = true;
+                MessageBox.Show(exp.ToString());
+                return;
+            }
+        }
+
+        private async Task<string> GetServiceUrlForSendAsync()
+        {
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    await MoaddiyanSessionChecker.PrepareClientAsync(httpClient);
+                    var response = await httpClient.GetAsync
+                        (
+                        $"https://api.moaddiyan.com/api/taxoptions/ServiceUrlForIntamediaSend"
+                        );
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        Cursor = Cursors.Default;
+                        Enabled = true;
+                        MessageBox.Show(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return "";
+                    }
+                    response.EnsureSuccessStatusCode();
+                    Cursor = Cursors.Default;
+                    Enabled = true;
+                    return JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                }
+            }
+            catch (Exception exp)
+            {
+                Cursor = Cursors.Default;
+                Enabled = true;
+                MessageBox.Show(exp.ToString());
+                return "";
+            }
+        }
+
+        private async Task<string> GetServiceUrlForSandBoxAsync()
+        {
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    await MoaddiyanSessionChecker.PrepareClientAsync(httpClient);
+                    var response = await httpClient.GetAsync
+                        (
+                        $"https://api.moaddiyan.com/api/taxoptions/ServiceUrlForSandBox"
+                        );
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        Cursor = Cursors.Default;
+                        Enabled = true;
+                        MessageBox.Show(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return "";
+                    }
+                    response.EnsureSuccessStatusCode();
+                    Cursor = Cursors.Default;
+                    Enabled = true;
+                    return JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                }
+            }
+            catch (Exception exp)
+            {
+                Cursor = Cursors.Default;
+                Enabled = true;
+                MessageBox.Show(exp.ToString());
+                return "";
+            }
+        }
+
+        private async void btnSend_Click(object sender, EventArgs e)
+        {
+            if(grd.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("لطفاً صورتحسابهای مد نظر را انتخاب کنید.");
+                return;
+            }
+            var workspaces = JsonConvert.DeserializeObject<WorkspaceExViewModel[]>(Settings.Default.WorkspacesJson);
+            var workspace = workspaces.Where(w => w.Workspace.Id == Settings.Default.WorkspaceId).Single();
+
+            List<Guid> idArray = new List<Guid>();
+            foreach (DataGridViewRow row in grd.SelectedRows)
+            {
+                idArray.Add((row.DataBoundItem as IntamediaInvoice).Id);
+            }
+            try
+            {
+                string serviceUrl = workspace.TaxInfo.SandBox ? await GetServiceUrlForSandBoxAsync() : await GetServiceUrlForSendAsync();
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    await MoaddiyanSessionChecker.PrepareClientAsync(httpClient);
+                    var response = await httpClient.PostAsync
+                        (
+                        $"https://{serviceUrl}/api/invoice/{Settings.Default.WorkspaceId}/queue",
+                         new StringContent(JsonConvert.SerializeObject(idArray), Encoding.UTF8, "application/json")
+                        );
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        Cursor = Cursors.Default;
+                        Enabled = true;
+                        MessageBox.Show(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return;
+                    }
+                    response.EnsureSuccessStatusCode();
+                    MessageBox.Show("صورتحسابهای انتخاب شده در صف ارسال قرار گرفتند.");
                 }
             }
             catch (Exception exp)

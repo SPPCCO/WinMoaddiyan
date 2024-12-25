@@ -41,6 +41,7 @@
             grd = new DataGridView();
             status = new StatusStrip();
             lblPaging = new ToolStripStatusLabel();
+            btnSend = new ToolStripButton();
             toolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)grd).BeginInit();
             status.SuspendLayout();
@@ -50,10 +51,10 @@
             // 
             toolStrip.Font = new Font("Tahoma", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             toolStrip.GripStyle = ToolStripGripStyle.Hidden;
-            toolStrip.Items.AddRange(new ToolStripItem[] { lblWorkspace, cmbWorkspace, btnRefreshWorkspaces, btnLogout, toolStripSeparator1, lblStatus, cmbStatus, btnAddInvoice });
+            toolStrip.Items.AddRange(new ToolStripItem[] { lblWorkspace, cmbWorkspace, btnRefreshWorkspaces, btnLogout, toolStripSeparator1, lblStatus, cmbStatus, btnAddInvoice, btnSend });
             toolStrip.Location = new Point(0, 0);
             toolStrip.Name = "toolStrip";
-            toolStrip.Size = new Size(800, 25);
+            toolStrip.Size = new Size(916, 25);
             toolStrip.TabIndex = 0;
             toolStrip.Text = "نوار ابزار";
             // 
@@ -132,15 +133,15 @@
             grd.Name = "grd";
             grd.ReadOnly = true;
             grd.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            grd.Size = new Size(800, 395);
+            grd.Size = new Size(916, 462);
             grd.TabIndex = 1;
             // 
             // status
             // 
             status.Items.AddRange(new ToolStripItem[] { lblPaging });
-            status.Location = new Point(0, 398);
+            status.Location = new Point(0, 465);
             status.Name = "status";
-            status.Size = new Size(800, 22);
+            status.Size = new Size(916, 22);
             status.TabIndex = 2;
             status.Text = "statusStrip1";
             // 
@@ -150,11 +151,21 @@
             lblPaging.Size = new Size(32, 17);
             lblPaging.Text = "آماده";
             // 
+            // btnSend
+            // 
+            btnSend.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            btnSend.Image = (Image)resources.GetObject("btnSend.Image");
+            btnSend.ImageTransparentColor = Color.Magenta;
+            btnSend.Name = "btnSend";
+            btnSend.Size = new Size(42, 22);
+            btnSend.Text = "ارسال";
+            btnSend.Click += btnSend_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 14F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 420);
+            ClientSize = new Size(916, 487);
             Controls.Add(status);
             Controls.Add(grd);
             Controls.Add(toolStrip);
@@ -188,5 +199,6 @@
         private StatusStrip status;
         private ToolStripStatusLabel lblPaging;
         private ToolStripButton btnAddInvoice;
+        private ToolStripButton btnSend;
     }
 }
