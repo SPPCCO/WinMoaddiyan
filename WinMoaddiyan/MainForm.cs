@@ -361,7 +361,7 @@ namespace WinMoaddiyan
                     response.EnsureSuccessStatusCode();
                     Cursor = Cursors.Default;
                     Enabled = true;
-                    return JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    return JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());//snd.moaddiyan.com
                 }
             }
             catch (Exception exp)
@@ -394,7 +394,7 @@ namespace WinMoaddiyan
                     response.EnsureSuccessStatusCode();
                     Cursor = Cursors.Default;
                     Enabled = true;
-                    return JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    return JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());//box.moaddiyan.com
                 }
             }
             catch (Exception exp)
