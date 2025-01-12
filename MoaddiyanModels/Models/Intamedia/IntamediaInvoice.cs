@@ -1,4 +1,6 @@
-﻿using RSecurityBackend.Models.Cloud;
+﻿using DNTPersianUtils.Core;
+using RSecurityBackend.Models.Cloud;
+using System.Globalization;
 
 
 namespace TadbirTaxService.Models.Intamedia
@@ -533,5 +535,207 @@ namespace TadbirTaxService.Models.Intamedia
         /// تاریخ اعلامیهٔ فروش
         /// </summary>
         public DateTime? AnnouncementSalesDate { get; set; }
+
+        public static IntamediaTaxIdParts DecomposeTaxId(string taxId)
+        {
+            string hexTime = taxId.Substring(6, 5);
+            int timeDayRange = int.Parse(hexTime, NumberStyles.HexNumber);
+            int unixTimeSeconds = timeDayRange * 3600 * 24;
+
+            var hexSerial = taxId.Substring(11, 10);
+
+            return new IntamediaTaxIdParts()
+            {
+                MemoryId = taxId.Substring(0, 6),
+                DateTime = DateTimeOffset.FromUnixTimeSeconds(unixTimeSeconds).DateTime,
+                InvoiceNumber = long.Parse(hexSerial, NumberStyles.HexNumber)
+            };
+        }
+
+        public void AutoFix()
+        {
+            if (InvoiceType == null && InvoiceSubject == IntamediaInvoiceSubject.Main)
+            {
+                if (string.IsNullOrEmpty(BuyerEccCode))
+                {
+                    InvoiceType = IntamediaInvoiceType.Type2;
+                }
+                else
+                {
+                    InvoiceType = IntamediaInvoiceType.Type1;
+                }
+            }
+
+            CreateDate = null;
+            if (InvoiceType == IntamediaInvoiceType.Type2)
+            {
+                TypeOfBuyer = null;
+                SendBuyerIdNumber = false;
+                SendBuyerPassportNo = false;
+                SendBuyerPostalCode = false;
+                SendBuyerEccCode = false;
+                SendBuyerBranchCode = false;
+            }
+            if (string.IsNullOrWhiteSpace(BuyerBranchCode) || BuyerBranchCode == "0")
+            {
+                BuyerBranchCode = null;
+            }
+            if (string.IsNullOrWhiteSpace(BuyerPostalCode) || BuyerPostalCode == "0")
+            {
+                BuyerPostalCode = null;
+            }
+            if (string.IsNullOrWhiteSpace(BuyerPassportNo) || BuyerPassportNo == "0")
+            {
+                BuyerPassportNo = null;
+            }
+            if (string.IsNullOrWhiteSpace(BuyerIdNumber) || BuyerIdNumber == "0")
+            {
+                BuyerIdNumber = null;
+            }
+            if (BuyerEccCode == "0")
+            {
+                BuyerEccCode = null;
+            }
+
+
+            if (string.IsNullOrEmpty(RelatedInvoiceTaxId))
+            {
+                RelatedInvoiceTaxId = null;
+            }
+
+            if (PaymentType == IntamediaInvoicePaymentType.Cash)
+            {
+                CashPartOfPayments = null;
+                InDebtPartOfPayments = null;
+            }
+
+            if (Items != null)
+            {
+                foreach (var item in Items)
+                {
+                    if (!string.IsNullOrEmpty(item.Description))
+                    {
+                        item.Description = item.Description.Trim().ApplyCorrectYeKe();
+                    }
+
+                    if (string.IsNullOrWhiteSpace(item.IntamediaUniqueContractNumber))
+                    {
+                        item.IntamediaUniqueContractNumber = null;
+                    }
+                    if (string.IsNullOrEmpty(item.OtherTax1Description) || item.OtherTax1Description == "0")
+                    {
+                        item.OtherTax1Description = null;
+                        item.OtherTax1RateInPercent = null;
+                    }
+                    if (item.OtherTax1RateInPercent == 0)
+                    {
+                        item.OtherTax1RateInPercent = null;
+                    }
+                    if (string.IsNullOrEmpty(item.OtherTax2Description) || item.OtherTax2Description == "0")
+                    {
+                        item.OtherTax2Description = null;
+                        item.OtherTax2RateInPercent = null;
+                    }
+                    if (item.OtherTax2RateInPercent == 0)
+                    {
+                        item.OtherTax2RateInPercent = null;
+                    }
+                }
+            }
+
+
+            if (InvoicePattern != IntamediaInvoicePattern.Pattern3Gold)
+            {
+                if (Items != null)
+                {
+                    foreach (var item in Items)
+                    {
+                        item.GoldBrokerShare = null;
+                        item.GoldConstructionCost = null;
+                        item.GoldConstructionCostPlusGoldSalerProfitPlusGoldBrokerShare = null;
+                        item.GoldKarat = null;
+                        item.GoldSalerProfit = null;
+                    }
+                }
+            }
+
+            if (InvoicePattern != IntamediaInvoicePattern.Pattern7Export)
+            {
+                if (Items != null)
+                {
+                    foreach (var item in Items)
+                    {
+                        item.NetWeightInCustoms = null;
+                        item.CustomsClaimedPriceInCurrency = null;
+                        item.CustomsClaimedPriceInRials = null;
+                    }
+                }
+
+                SalerCustomsLicenceNo = null;
+                SalerCustomsCode = null;
+                SumOfCustomsClaimedPriceInCurrency = null;
+                SumOfCustomsClaimedPriceInRials = null;
+                if (InvoicePattern != IntamediaInvoicePattern.Pattern8BillOfLading)
+                {
+                    SumofItemNetWeightInCustoms = null;
+                }
+
+                CustomsCottageDate = null;
+                CustomsCottageNo = null;
+            }
+
+            if (InvoicePattern != IntamediaInvoicePattern.Pattern4Contract)
+            {
+                SalerContractNo = null;
+            }
+
+            if (InvoicePattern != IntamediaInvoicePattern.Pattern2CurrencySales && InvoicePattern != IntamediaInvoicePattern.Pattern7Export)
+            {
+                if (Items != null)
+                {
+                    foreach (var item in Items)
+                    {
+                        item.CurrencyExchangeRateInRial = null;
+                        item.CurrencySalesProfitInRials = null;
+                        item.IntamediaCurrencyCode = null;
+                        item.UnitPriceInCurrency = null;
+                        item.CurrencySalesVatReferenceOrProfitInRials = null;
+                        item.CurrencySalesPurchaseInRials = null;
+                    }
+                }
+            }
+
+            if (InvoicePattern != IntamediaInvoicePattern.Pattern6AirlineTicket)
+            {
+                FlightTourAgentEccCode = null;
+                FlightType = null;
+            }
+
+            if (InvoicePattern != IntamediaInvoicePattern.Pattern8BillOfLading)
+            {
+                LoadingNo = null;
+                LoadingReferenceNo = null;
+                OriginCountryCode = null;
+                OriginCountryName = null;
+                OriginCityCode = null;
+                OriginCityName = null;
+                DestinationCountryCode = null;
+                DestinationCountryName = null;
+                DestinationCityCode = null;
+                DestinationCityName = null;
+                TransmitterId = null;
+                ReceiverId = null;
+                LoadingType = null;
+                ContainerNo = null;
+                DriverId = null;
+                ShippingGoods = null;
+            }
+
+            if (InvoicePattern != IntamediaInvoicePattern.Pattern11Bourse)
+            {
+                AnnouncementSalesNumber = null;
+                AnnouncementSalesDate = null;
+            }
+        }
     }
 }

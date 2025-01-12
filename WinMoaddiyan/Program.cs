@@ -17,7 +17,6 @@ namespace WinMoaddiyan
             {
                 Application.Run(new MainForm());
             }
-            
         }
     }
 }
