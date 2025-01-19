@@ -1,4 +1,3 @@
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using RSecurityBackend.Models.Auth.ViewModels;
 using System.Diagnostics;

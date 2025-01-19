@@ -1,6 +1,4 @@
-﻿using Azure;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System.Net;
@@ -8,7 +6,7 @@ using System.Text;
 using TadbirTaxService.Models.Intamedia;
 using TadbirTaxService.Models.Workspace;
 using WinMoaddiyan.Properties;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+
 
 namespace WinMoaddiyan
 {
